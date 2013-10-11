@@ -5,18 +5,12 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="A simple jQuery plugin to display the current weather information for any location using Yahoo! Weather. Developed by James Fleeting.">
+  <meta name="description" content="A simple jQuery plugin to display the current weather information for any location using OpenWeatherMap. Developed by James Fleeting.">
   <meta name="viewport" content="width=device-width">
-  <!-- Facebook -->
-  <meta property="og:title" content="simpleWeather - a simple jQuery plugin">
-  <meta property="og:description" content="A simple jQuery plugin to display the current weather information for any location using Yahoo! Weather. Developed by James Fleeting.">
-  <meta property="og:url" content="http://simpleweatherjs.com/">
-  <meta property="og:image" content="http://simpleweatherjs.com/images/og-image.png">
-  <!-- /Facebook -->
 
   <title>simpleWeather - a simple jQuery plugin</title>
 
-  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/base/jquery-ui.css">
   <style>
   @font-face {
     font-family: 'weather';
@@ -136,16 +130,40 @@
   #weather .updated {
     opacity: 0.45;
   }
+
+  #forecast {
+    display: none;
+
+    margin: 0 auto;
+    padding: 0;
+    width: 300px;
+    color: #fff;
+  }
+
+  #forecast li {
+    display: inline-block;
+    margin: 0 1px;
+    padding: 6px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    background: rgb(223, 132, 30);
+  }
+
+  #forecast li span {
+    display: block;
+  }
   </style>
 
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 </head>
 <body>
   <div id="weather"><img src="https://dl.dropboxusercontent.com/u/2086809/weatherfont/loader.gif" alt="Loading..." class="loading"><br />Loading...</div>
 
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.1.0/moment.min.js"></script>
+  <ul id="forecast"></ul>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.1.0/moment.min.js"></script>
   <script src="jquery.simpleWeather-3.0.js"></script>
   <script>
   $(document).ready(function() {
@@ -154,7 +172,7 @@
       units: 'imperial',
       weatherType: 'current',
       success: function(weather) {
-        weatherEl = $('#weather');
+        var weatherEl = $('#weather');
         html = '<h1 class="icon-'+weather.conditionCode+'"></h1>';
         html += '<h2>'+weather.temp.current+'&deg;</h2>';
         html += '<ul><li>'+weather.city+'</li>';
@@ -164,16 +182,50 @@
         html += '<p class="updated">Updated '+moment(timestamp).fromNow()+'</p>';
 
         weatherEl.fadeOut(function() {
-          if(weather.temp.current > 80)
+          if(weather.temp.current >= 95)
+            $('body').animate({backgroundColor: '#C33C00'}, 1800);
+          else if(weather.temp.current >= 80)
             $('body').animate({backgroundColor: '#F7AC57'}, 1800);
-          else
+          else if(weather.temp.current >= 65)
+            $('body').animate({backgroundColor: '#69D2E7'}, 1800);
+          else if(weather.temp.current >= 50)
             $('body').animate({backgroundColor: '#0091c2'}, 1800);
+          else if(weather.temp.current <= 49)
+            $('body').animate({backgroundColor: '#587EB0'}, 1800);
+          else
+            $('body').animate({backgroundColor: '#515151'}, 1800);
 
-          weatherEl.html(html).delay(500).slideDown(2200);
+          weatherEl.html(html).delay(500).slideDown(2200, function() {
+            $('#forecast').fadeIn();
+          });
         });
       },
       error: function(error) {
         $("#weather").html('<p>'+error+'</p>');
+      }
+    });
+
+    $.simpleWeather({
+      city: 'Austin,TX',
+      units: 'imperial',
+      weatherType: 'forecast',
+      forecastType: 'daily',
+      forecastLimit: 6,
+      success: function(weather) {
+        forecastHTML = '';
+        console.log(weather.days);
+        $.each(weather.days, function(i, forecast) {
+          if(i != 'day0') {
+            console.log(forecast.timestamp);
+
+            forecastHTML += '<li>'+moment('Date('+forecast.timestamp*1000+')').format('ddd')+'<span>'+forecast.temp.high+'&deg;</span></li>';
+          }
+        });
+
+        $('#forecast').html(forecastHTML);
+      },
+      error: function(error) {
+        $("#forecast").html('<p>'+error+'</p>');
       }
     });
   });

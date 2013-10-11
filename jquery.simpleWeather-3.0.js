@@ -21,6 +21,8 @@
 				units: 'imperial', // metric or imperial
 				weatherType: 'current', // current or forecast
 				lang: 'en', // en
+				forecastType: 'daily', // daily or hourly
+				forecastLimit: 7, // 2-14
 				success: function(weather){},
 				error: function(message){}
 			}, options);
@@ -29,7 +31,11 @@
 
 			var apiURL = 'http://api.openweathermap.org/data/2.5/';
 			if(options.weatherType == 'forecast') {
-				apiURL += 'forecast/daily?';
+				apiURL += 'forecast/';
+				if(options.forecastType == 'daily') {
+					apiURL += 'daily/';
+				}
+				apiURL += '?cnt='+options.forecastLimit+'&';
 			} else if(options.weatherType == 'current') {
 				apiURL += 'weather?';
 			}
@@ -55,7 +61,8 @@
 						if(options.weatherType == 'forecast') {
 							var weather = {
 								city: data.city.name,
-								cityID: data.city.id
+								cityID: data.city.id,
+								days: {}
 							};
 
 							$.each(data.list, function(i, result) {
@@ -85,7 +92,7 @@
 									var nightAlt = Math.round((9.0/5.0)*result.temp.night+32.0);
 								}
 
-								weather['day'+i] = {
+								weather.days['day'+i] = {
 									timestamp: result.dt,
 									temp: {
 										unit: unit,
