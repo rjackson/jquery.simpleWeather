@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="A simple jQuery plugin to display the current weather information for any location using Yahoo! Weather. Developed by James Fleeting.">
+  <meta name="viewport" content="width=device-width">
+  <!-- Facebook -->
+  <meta property="og:title" content="simpleWeather - a simple jQuery plugin">
+  <meta property="og:description" content="A simple jQuery plugin to display the current weather information for any location using Yahoo! Weather. Developed by James Fleeting.">
+  <meta property="og:url" content="http://simpleweatherjs.com/">
+  <meta property="og:image" content="http://simpleweatherjs.com/images/og-image.png">
+  <!-- /Facebook -->
+
+  <title>simpleWeather - a simple jQuery plugin</title>
+
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/base/jquery-ui.css">
+  <style>
+  @font-face {
+    font-family: 'weather';
+    src: url('https://dl.dropboxusercontent.com/u/2086809/weatherfont/artill_clean_icons-webfont.eot');
+    src: url('https://dl.dropboxusercontent.com/u/2086809/weatherfont/artill_clean_icons-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://dl.dropboxusercontent.com/u/2086809/weatherfont/artill_clean_icons-webfont.woff') format('woff'),
+         url('https://dl.dropboxusercontent.com/u/2086809/weatherfont/artill_clean_icons-webfont.ttf') format('truetype'),
+         url('https://dl.dropboxusercontent.com/u/2086809/weatherfont/artill_clean_icons-webfont.svg#artill_clean_weather_iconsRg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    padding: 25px 0;
+    font: 13px 'Open Sans', "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    background: #fff;
+  }
+
+  .loading {
+    margin: 65px 0 0;
+  }
+
+  #weather {
+    width: 300px;
+    margin: 0px auto;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  #weather h1 {
+    margin: 0;
+    color: #fff;
+    font-family: weather;
+    font-size: 250px;
+    font-weight: normal;
+    line-height: 1.0;
+  }
+
+  #weather h1.icon-200:before { content: "S"; }
+  #weather h1.icon-201:before { content: "Q"; }
+  #weather h1.icon-202:before { content: "Q"; }
+  #weather h1.icon-210:before { content: "Y"; }
+  #weather h1.icon-211:before { content: "Y"; }
+  #weather h1.icon-212:before { content: "Q"; }
+  #weather h1.icon-221:before { content: "Q"; }
+  #weather h1.icon-230:before { content: "S"; }
+  #weather h1.icon-231:before { content: "S"; }
+  #weather h1.icon-232:before { content: "S"; }
+
+  #weather h1.icon-300:before { content: "I"; }
+  #weather h1.icon-301:before { content: "I"; }
+  #weather h1.icon-302:before { content: "M"; }
+  #weather h1.icon-310:before { content: "M"; }
+  #weather h1.icon-311:before { content: "M"; }
+  #weather h1.icon-312:before { content: "M"; }
+  #weather h1.icon-321:before { content: "I"; }
+
+  #weather h1.icon-500:before { content: "I"; }
+  #weather h1.icon-501:before { content: "G"; }
+  #weather h1.icon-502:before { content: "M"; }
+  #weather h1.icon-503:before { content: "O"; }
+  #weather h1.icon-504:before { content: "U"; }
+  #weather h1.icon-511:before { content: "W"; }
+  #weather h1.icon-520:before { content: "I"; }
+  #weather h1.icon-521:before { content: "I"; }
+  #weather h1.icon-522:before { content: "G"; }
+
+  #weather h1.icon-600:before { content: "I"; }
+  #weather h1.icon-601:before { content: "W"; }
+  #weather h1.icon-602:before { content: "W"; }
+  #weather h1.icon-611:before { content: "W"; }
+  #weather h1.icon-621:before { content: "W"; }
+
+  #weather h1.icon-701:before { content: "…"; }
+  #weather h1.icon-711:before { content: "…"; }
+  #weather h1.icon-721:before { content: "…"; }
+  #weather h1.icon-731:before { content: "…"; }
+  #weather h1.icon-741:before { content: "Z"; }
+
+  #weather h1.icon-800:before { content: "1"; }
+  #weather h1.icon-801:before { content: "2"; }
+  #weather h1.icon-802:before { content: "A"; }
+  #weather h1.icon-803:before { content: "3"; }
+  #weather h1.icon-804:before { content: "3"; }
+
+  #weather h1.icon-900:before { content: ":"; }
+  #weather h1.icon-901:before { content: "4"; }
+  #weather h1.icon-902:before { content: ":"; }
+  #weather h1.icon-903:before { content: "0"; }
+  #weather h1.icon-904:before { content: "1"; }
+  #weather h1.icon-905:before { content: ","; }
+  #weather h1.icon-906:before { content: "S"; }
+
+  #weather h2 {
+    margin: -50px 0 8px;
+    color: #fff;
+    font-size: 140px;
+    font-weight: 300;
+    text-align: center;
+    text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  #weather ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  #weather li {
+    background: #fff;
+    background: rgba(255,255,255,0.90);
+    margin: 0 15px;
+    padding: 20px;
+    display: inline-block;
+    border-radius: 5px;
+  }
+
+  #weather .updated {
+    opacity: 0.45;
+  }
+  </style>
+
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+</head>
+<body>
+  <div id="weather"><img src="https://dl.dropboxusercontent.com/u/2086809/weatherfont/loader.gif" alt="Loading..." class="loading"><br />Loading...</div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.1.0/moment.min.js"></script>
+  <script src="jquery.simpleWeather-3.0.js"></script>
+  <script>
+  $(document).ready(function() {
+    $.simpleWeather({
+      city: 'Austin,TX',
+      units: 'imperial',
+      weatherType: 'current',
+      success: function(weather) {
+        weatherEl = $('#weather');
+        html = '<h1 class="icon-'+weather.conditionCode+'"></h1>';
+        html += '<h2>'+weather.temp.current+'&deg;</h2>';
+        html += '<ul><li>'+weather.city+'</li>';
+        html += '<li class="currently">'+weather.condition+'</li></ul>';
+
+        var timestamp = moment(weather.updated);
+        html += '<p class="updated">Updated '+moment(timestamp).fromNow()+'</p>';
+
+        weatherEl.fadeOut(function() {
+          if(weather.temp.current > 80)
+            $('body').animate({backgroundColor: '#F7AC57'}, 1800);
+          else
+            $('body').animate({backgroundColor: '#0091c2'}, 1800);
+
+          weatherEl.html(html).delay(500).slideDown(2200);
+        });
+      },
+      error: function(error) {
+        $("#weather").html('<p>'+error+'</p>');
+      }
+    });
+  });
+  </script>
+</body>
+</html>
